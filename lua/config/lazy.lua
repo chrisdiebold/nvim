@@ -32,7 +32,18 @@ require("lazy").setup({
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "kanagawa" } },
   -- automatically check for plugin updates
-  checker = { enabled = true },
+  checker = { enabled = true, notify = false },
+  ui = { border = "rounded" },
+  change_detection = { notify = false },
+  rocks = { enabled = false },
+  performance = {
+    disabled_plugins = {
+      "netrwPlugin",
+      "tohtml",
+      "rplugin",
+      "tutor",
+    },
+  },
 })
 
 require("config.commands")
