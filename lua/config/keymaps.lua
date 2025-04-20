@@ -31,6 +31,28 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" }
 -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
+-- Indent while remaining in visual mode.
+vim.keymap.set("v", "<", "<gv")
+vim.keymap.set("v", ">", ">gv")
+
+-- Poweful <esc>.
+vim.keymap.set({ "i", "s", "n" }, "<esc>", function()
+  if require("luasnip").expand_or_jumpable() then
+    require("luasnip").unlink_current()
+  end
+  vim.cmd("noh")
+  return "<esc>"
+end, { desc = "Escape, clear hlsearch, and stop snippet session", expr = true })
+
+-- Make U opposite to u.
+vim.keymap.set("n", "U", "<C-r>", { desc = "Redo" })
+
+-- Escape and save changes.
+vim.keymap.set({ "s", "i", "n", "v" }, "<C-s>", "<esc>:w<cr>", { desc = "Exit insert mode and save changes." })
+vim.keymap.set({ "s", "i", "n", "v" }, "<C-S-s>", "<esc>:wa<cr>", { desc = "Exit insert mode and save all changes." })
+
+-- Quickly go to the end of the line while in insert mode.
+vim.keymap.set({ "i", "c" }, "<C-l>", "<C-o>A", { desc = "Go to the end of the line" })
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
