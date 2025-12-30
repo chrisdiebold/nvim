@@ -1,5 +1,3 @@
-kind_icons = require('icons').symbol_kinds
-
 return { -- Autocompletion
     'saghen/blink.cmp',
 
