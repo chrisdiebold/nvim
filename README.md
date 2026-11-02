@@ -8,8 +8,70 @@ and Neovim's built-in LSP client (`vim.lsp.config` / `vim.lsp.enable`).
 - Neovim 0.11+
 - `git`, a C compiler, and the [`tree-sitter`](https://github.com/tree-sitter/tree-sitter) CLI (for parsers)
 - [`fzf`](https://github.com/junegunn/fzf) and [`ripgrep`](https://github.com/BurntSushi/ripgrep) (for fzf-lua)
-- `node`/`npm` (Mason installs several servers and tools through npm)
+- `curl`, `unzip`, `tar`, and `gzip` (Mason downloads and unpacks packages with these)
+- `node`/`npm` (Mason installs basedpyright, vtsls, eslint, prettierd, markdownlint-cli2, and others through npm)
+- `python3` with `venv` (Mason installs sqlfluff through pip)
+- `go` (Mason builds gopls, gofumpt, and goimports with `go install`)
+- `rustup` (provides `rustfmt`; Mason does not install it)
 - A [Nerd Font](https://www.nerdfonts.com/) (optional, for icons)
+
+Everything else (LSP servers, formatters, linters) is installed by Mason on first launch.
+
+### macOS
+
+Install the Xcode command line tools (C compiler, `git`) and [Homebrew](https://brew.sh), then:
+
+```sh
+xcode-select --install
+brew install neovim git tree-sitter-cli fzf ripgrep node python
+
+# Go (official installer from go.dev; installs to /usr/local/go and adds it to PATH)
+GO_VERSION=$(curl -s 'https://go.dev/VERSION?m=text' | head -n1)
+GO_ARCH=$([ "$(uname -m)" = arm64 ] && echo arm64 || echo amd64)
+curl -LO "https://go.dev/dl/${GO_VERSION}.darwin-${GO_ARCH}.pkg"
+sudo installer -pkg "${GO_VERSION}.darwin-${GO_ARCH}.pkg" -target /
+echo 'export PATH="$HOME/go/bin:$PATH"' >> ~/.zshrc
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y   # Rust, includes rustfmt
+brew install --cask font-jetbrains-mono-nerd-font   # optional
+```
+
+### Ubuntu
+
+The `neovim` package in apt is too old, so install a current release from the
+[Neovim releases page](https://github.com/neovim/neovim/releases) (or the `neovim-ppa/unstable` PPA). The apt
+versions of `node` and `go` are also old, so install those from upstream.
+
+```sh
+sudo apt update
+sudo apt install -y build-essential git curl unzip tar gzip fzf ripgrep python3 python3-venv python3-pip
+
+# Neovim (official release tarball)
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+sudo rm -rf /opt/nvim-linux-x86_64
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+echo 'export PATH="/opt/nvim-linux-x86_64/bin:$PATH"' >> ~/.bashrc
+
+# Node via nvm, then the tree-sitter CLI
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+nvm install --lts
+npm install -g tree-sitter-cli
+
+# Go (official tarball from go.dev)
+GO_VERSION=$(curl -s 'https://go.dev/VERSION?m=text' | head -n1)
+curl -LO "https://go.dev/dl/${GO_VERSION}.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "${GO_VERSION}.linux-amd64.tar.gz"
+echo 'export PATH="/usr/local/go/bin:$HOME/go/bin:$PATH"' >> ~/.bashrc
+
+# Rust (includes rustfmt)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+```
+
+On ARM machines, use `nvim-linux-arm64.tar.gz` and `linux-arm64` for Go instead. For icons, download a Nerd Font from
+[nerdfonts.com](https://www.nerdfonts.com/font-downloads), unzip it into `~/.local/share/fonts`, and run `fc-cache -f`.
+Ubuntu 22.04 ships an old `fzf`; if fzf-lua complains, install the latest from the
+[fzf releases page](https://github.com/junegunn/fzf/releases).
 
 ## Install
 
